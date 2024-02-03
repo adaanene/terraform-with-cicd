@@ -1,0 +1,69 @@
+name: Terraform Deployment
+
+env:
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  TF_VERSION:  '1.4.0'
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment for deployment'
+        required: true
+        default: 'dev'
+        # Add other environment options as desired
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Export variables
+        run: |
+             echo "AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY"
+             echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
+
+      - name: Terraform Plan
+        run: terraform plan -var-file=environments/${{ github.event.inputs.environment }}/values.tfvars -out=tfplan
+
+      - name: Manual Approval
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          message: "A Terraform deployment is pending for review on the ${GITHUB_REF} branch. Please review the changes and provide approval to proceed."
+          approvers: 'darey-io'
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+        run: terraform apply tfplan
