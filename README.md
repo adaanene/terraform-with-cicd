@@ -61,3 +61,25 @@ AWS secrete and access keys:
 
 - create credentials in Jenkins using the "AWS credentials" type
 - for ID use `AWS_CRED`
+- enter your IAM user Access and secret key in the designated spaces
+
+**STEP 5**
+
+Create and configure a Jenkins Multibranch pipeline 
+
+Configure the following:
+- Source: GitHub
+- Script path: Jenkinsfile
+- Credentials: the GitHub credentials you set up before
+- add the repository URL (which you forked from https://github.com/dareyio/terraform-aws-pipeline.git ) 
+
+The Jenkinsfile:
+
+- Automates various stages of the development process including code checkout, planning infrastructure modifications using Terraform, and selectively applying those changes
+
+- The primary goal is to establish a systematic approach to reviewing and implementing alterations to the infrastructure managed by Terraform
+
+- Additionally, a manual checkpoint is incorporated to validate and approve changes before they are applied to crucial environments such as production. This ensures a controlled and secure deployment process for infrastructure changes
+
+    ![image](./screenshots/buildplan-yes_or_abort.png)
+
