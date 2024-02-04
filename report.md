@@ -23,7 +23,7 @@ Added detailed comments for each stage and important commands to explain each st
 Introduced a try-catch block around the 'Terraform Apply' stage to catch exceptions and handle failures gracefully providing detailed error messages. In case of 'Terraform Apply' failure, a notification is sent and the build result is set to 'FAILURE'.
 
 
-## Challenges faced: 
+## Challenges faced with this project: 
 
 **1. Deprecated Argument Replacement:**
 
