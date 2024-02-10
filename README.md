@@ -140,7 +140,7 @@ Introduced a try-catch block around the 'Terraform Apply' stage to catch excepti
 
     ![docker_exec_error](./screenshots/docker_exec_error.png)
 
-    I resolved this by running the command with bash only instead of /bin/bash so `docker exec -it jenkins-server bash`
+    I resolved this by running the command with bash only instead of /bin/bash, so `docker exec -it jenkins-server bash`
 
 
 **3. Terraform Apply Error Resolution:**
